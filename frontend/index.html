@@ -4,610 +4,570 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Task Manager</title>
-  <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; color: #1a1a2e; min-height: 100vh; }
-
-  /* ── HEADER ── */
-  header {
-    background: #1e3a5f; color: white; padding: 12px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px;
-  }
-  header h1 { font-size: 1.1rem; }
-  header button {
-    background: #e74c3c; color: white; border: none;
-    padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: 0.85rem;
-  }
-  #headerUser { font-size: 0.85rem; }
-
-  /* ── LAYOUT ── */
-  .container { max-width: 960px; margin: 20px auto; padding: 0 14px; }
-
-  .card {
-    background: white; border-radius: 10px; padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 18px;
-  }
-  .card h2 { margin-bottom: 14px; color: #1e3a5f; font-size: 1rem; }
-
-  /* ── FORMS ── */
-  input, select, textarea {
-    width: 100%; padding: 9px 11px; margin-bottom: 10px;
-    border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem;
-  }
-  textarea { resize: vertical; min-height: 65px; }
-
-  /* ── BUTTONS ── */
-  .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
-  .btn-primary { background: #1e3a5f; color: white; }
-  .btn-danger  { background: #e74c3c; color: white; }
-  .btn-success { background: #27ae60; color: white; }
-  .btn-sm { padding: 4px 10px; font-size: 0.78rem; }
-
-  /* ── MESSAGES ── */
-  .message { padding: 9px 13px; border-radius: 6px; margin-bottom: 12px; font-size: 0.88rem; }
-  .message.error   { background: #fdecea; color: #c0392b; }
-  .message.success { background: #eafaf1; color: #1e8449; }
-
-  /* ── TABLE ── */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 420px; }
-  th { background: #1e3a5f; color: white; padding: 9px 10px; text-align: left; white-space: nowrap; }
-  td { padding: 9px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
-  tr:hover td { background: #f8f9fa; }
-
-  /* ── BADGES ── */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
-  .badge-pending     { background: #fef9e7; color: #b7950b; }
-  .badge-in-progress { background: #ebf5fb; color: #1a5276; }
-  .badge-completed   { background: #eafaf1; color: #1e8449; }
-  .badge-high   { background: #fdecea; color: #c0392b; }
-  .badge-medium { background: #fef5e7; color: #d35400; }
-  .badge-low    { background: #eafaf1; color: #1e8449; }
-
-  /* ── TABS ── */
-  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .tab { padding: 7px 16px; border-radius: 6px; cursor: pointer; border: 2px solid #1e3a5f; color: #1e3a5f; font-weight: 600; background: white; font-size: 0.85rem; }
-  .tab.active { background: #1e3a5f; color: white; }
-
-  /* ── INFO BAR ── */
-  .info-bar { background: #eaf0fb; border-left: 4px solid #1e3a5f; padding: 9px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem; color: #1e3a5f; }
-  .actions { display: flex; gap: 5px; flex-wrap: wrap; }
-
-  /* ── EDIT MODAL ── */
-  .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4); z-index: 100; align-items: center;
-    justify-content: center; padding: 16px;
-  }
-  .modal-box {
-    background: white; padding: 24px; border-radius: 10px;
-    width: 100%; max-width: 400px;
-  }
-  .modal-box h3 { margin-bottom: 14px; color: #1e3a5f; font-size: 1rem; }
-
-  /* ── LOGIN PAGE ── */
- #loginPage {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    z-index: 999;
-  }
-
-  .login-wrapper {
-    display: flex;
-    width: 100%;
-    max-width: 820px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-  }
-
-  /* Left branding panel */
-  .login-left {
-    flex: 1;
-    background: linear-gradient(160deg, #1a2f4e 0%, #0d5c46 100%);
-    padding: 36px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    color: white;
-  }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-icon {
-    width: 38px; height: 38px; background: rgba(255,255,255,0.12);
-    border-radius: 10px; display: flex; align-items: center;
-    justify-content: center; font-size: 1.2rem;
-  }
-  .brand-name { font-size: 1.15rem; font-weight: 700; }
-  .tagline { font-size: 1.35rem; font-weight: 700; line-height: 1.45; margin-bottom: 30px; }
-  .tagline span { color: #5dcaa5; }
-  .features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .features li { display: flex; align-items: center; gap: 9px; font-size: 0.85rem; opacity: 0.9; }
-  .features li::before {
-    content: '✓'; background: rgba(93,202,165,0.2); color: #5dcaa5;
-    width: 20px; height: 20px; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-size: 0.7rem;
-    font-weight: 700; flex-shrink: 0;
-  }
-
-  /* Right form panel */
-  .login-right {
-    flex: 1;
-    background: white;
-    padding: 36px 36px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .login-right h2 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
-  .login-right .subtitle { color: #6b7280; font-size: 0.88rem; margin-bottom: 24px; }
-
-  .input-group { margin-bottom: 14px; }
-  .input-group label {
-    display: block; font-size: 0.75rem; font-weight: 700; color: #374151;
-    margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase;
-  }
-  .input-group input {
-    width: 100%; padding: 11px 14px; margin: 0;
-    border: 1.5px solid #e5e7eb; border-radius: 8px;
-    font-size: 0.92rem; color: #1a1a2e; outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .input-group input:focus { border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.1); }
-
-  .login-btn {
-    width: 100%; padding: 12px; border: none; border-radius: 8px;
-    background: linear-gradient(135deg, #1e3a5f, #2e6da4);
-    color: white; font-size: 0.95rem; font-weight: 700;
-    cursor: pointer; margin-top: 6px; letter-spacing: 0.3px;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-  .login-btn:hover { opacity: 0.9; }
-  .login-btn:active { transform: scale(0.99); }
-
-  .demo-creds {
-    margin-top: 20px; padding: 13px 15px;
-    background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px;
-  }
-  .demo-creds p { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 9px; }
-  .cred-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; flex-wrap: wrap; }
-  .cred-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
-  .cred-badge.admin { background: #fdecea; color: #c0392b; }
-  .cred-badge.user  { background: #ebf5fb; color: #1a5276; }
-  .cred-text { font-size: 0.78rem; color: #4b5563; font-family: monospace; flex: 1; }
-  .fill-btn {
-    font-size: 0.72rem; padding: 2px 9px;
-    background: none; border: 1px solid #d1d5db; border-radius: 5px;
-    color: #6b7280; cursor: pointer; flex-shrink: 0;
-  }
-  .fill-btn:hover { background: #f3f4f6; }
-  #loginError { margin-bottom: 10px; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .login-left { display: none; }
-    .login-right { padding: 28px 22px; border-radius: 16px; }
-    .login-wrapper { border-radius: 16px; }
-
-    .container { margin: 12px auto; padding: 0 10px; }
-    .card { padding: 14px; }
-    .tabs { gap: 6px; }
-    .tab { padding: 6px 12px; font-size: 0.8rem; }
-    th, td { padding: 7px 8px; font-size: 0.8rem; }
-    .btn-sm { padding: 3px 8px; font-size: 0.75rem; }
-    header h1 { font-size: 1rem; }
-  }
-
-  @media (max-width: 400px) {
-    .cred-text { display: none; }
-  }
-</style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen">
+<div id="root"></div>
 
-<header id="appHeader" style="display:none">
-  <h1>📋 Task Manager</h1>
-  <div>
-    <span id="headerUser" style="margin-right:14px; font-size:0.9rem;"></span>
-    <button onclick="logout()">Logout</button>
-  </div>
-</header>
+<script type="text/babel">
+const { useState, useEffect } = React;
+const API = "http://localhost:5000/api";
 
-<div class="container">
+// ── Helpers ──────────────────────────────────────────────
+function authHeaders(token) {
+  return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+}
 
-  <!-- LOGIN PAGE -->
-<div id="loginPage">
-  <div class="login-wrapper">
+function StatusBadge({ value }) {
+  const styles = {
+    pending:       "bg-yellow-100 text-yellow-800",
+    "in-progress": "bg-blue-100 text-blue-800",
+    completed:     "bg-green-100 text-green-800",
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${styles[value] || "bg-gray-100 text-gray-600"}`}>
+      {value}
+    </span>
+  );
+}
 
-    <!-- Left Panel -->
-    <div class="login-left">
-      <div class="brand">
-        <div class="brand-icon">📋</div>
-        <span class="brand-name">TaskManager</span>
-      </div>
+function PriorityBadge({ value }) {
+  const styles = {
+    high:   "bg-red-100 text-red-700",
+    medium: "bg-orange-100 text-orange-700",
+    low:    "bg-green-100 text-green-700",
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${styles[value] || "bg-gray-100 text-gray-600"}`}>
+      {value}
+    </span>
+  );
+}
 
-      <div>
-        <p class="tagline">Organize work,<br>deliver <span>results.</span></p>
-        <ul class="features">
-          <li>Role-based access for Admin & Users</li>
-          <li>Create, assign and track tasks</li>
-          <li>Secure JWT authentication</li>
-          <li>Real-time status updates</li>
-        </ul>
-      </div>
-    </div>
+function Message({ msg }) {
+  if (!msg.text) return null;
+  const base = "px-4 py-2 rounded-md text-sm mb-3";
+  const color = msg.type === "error"
+    ? "bg-red-50 text-red-700 border border-red-200"
+    : "bg-green-50 text-green-700 border border-green-200";
+  return <div className={`${base} ${color}`}>{msg.text}</div>;
+}
 
-    <!-- Right Panel -->
-    <div class="login-right">
-      <h2>Welcome back</h2>
-      <p class="subtitle">Sign in to your account to continue</p>
+// ── Login Page ────────────────────────────────────────────
+function LoginPage({ onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState({});
 
-      <div id="loginError"></div>
+  const fillCreds = (e, p) => { setEmail(e); setPassword(p); };
 
-      <div class="input-group">
-        <label>Email address</label>
-        <input type="email" id="loginEmail" placeholder="you@example.com" />
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter your password"
-          onkeydown="if(event.key==='Enter') doLogin()" />
-      </div>
-
-      <button class="login-btn" onclick="doLogin()">Sign in →</button>
-
-      <div class="demo-creds">
-        <p>Demo credentials</p>
-        <div class="cred-row">
-          <span class="cred-badge admin">Admin</span>
-          <span class="cred-text">admin@example.com / admin123</span>
-          <button class="fill-btn" onclick="fillCreds('admin@example.com','admin123')">Fill</button>
-        </div>
-        <div class="cred-row">
-          <span class="cred-badge user">User</span>
-          <span class="cred-text">nasrin@example.com / user123</span>
-          <button class="fill-btn" onclick="fillCreds('nasrin@example.com','user123')">Fill</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-  <!-- MAIN APP -->
-  <div id="appSection" style="display:none">
-
-    <!-- USER DASHBOARD -->
-    <div id="userDashboard">
-      <div class="info-bar" id="userInfoBar"></div>
-      <div class="card">
-        <h2>➕ Create New Task</h2>
-        <div id="createMsg"></div>
-        <input type="text" id="newTitle" placeholder="Task title *" />
-        <textarea id="newDesc" placeholder="Description (optional)"></textarea>
-        <select id="newPriority">
-          <option value="low">Low Priority</option>
-          <option value="medium" selected>Medium Priority</option>
-          <option value="high">High Priority</option>
-        </select>
-        <button class="btn btn-primary" onclick="createTask()">Create Task</button>
-      </div>
-      <div class="card">
-        <h2>📌 My Tasks</h2>
-        
-       <div class="table-wrap">
-  <table id="userTaskTable">
-    <thead>
-      <tr><th>Title</th><th>Priority</th><th>Status</th><th>Actions</th></tr>
-    </thead>
-    <tbody id="userTaskBody"></tbody>
-  </table>
-</div>
-
-      </div>
-    </div>
-
-    <!-- ADMIN DASHBOARD -->
-    <div id="adminDashboard" style="display:none">
-      <div class="info-bar">Logged in as <b>Admin</b>. You can manage all users and tasks.</div>
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('tasksTab', this)">All Tasks</div>
-        <div class="tab" onclick="switchTab('usersTab', this)">All Users</div>
-        <div class="tab" onclick="switchTab('createTab', this)">Create Task</div>
-      </div>
-
-      <!-- Tasks Tab -->
-      <div id="tasksTab" class="card">
-        <h2>📋 All Tasks</h2>
-        <div class="table-wrap">
-  <table>
-    <thead>
-      <tr><th>Title</th><th>Assigned To</th><th>Priority</th><th>Status</th><th>Actions</th></tr>
-    </thead>
-    <tbody id="adminTaskBody"></tbody>
-  </table>
-</div>
-      </div>
-
-      <!-- Users Tab -->
-      <div id="usersTab" class="card" style="display:none">
-        <h2>👥 All Users</h2>
-        <div class="table-wrap">
-  <table>
-    <thead>
-      <tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr>
-    </thead>
-    <tbody id="adminUserBody"></tbody>
-  </table>
-</div>
-      </div>
-
-      <!-- Create Task Tab (Admin) -->
-      <div id="createTab" class="card" style="display:none">
-        <h2>➕ Create Task (Assign to User)</h2>
-        <div id="adminCreateMsg"></div>
-        <input type="text" id="adminTitle" placeholder="Task title *" />
-        <textarea id="adminDesc" placeholder="Description (optional)"></textarea>
-        <select id="adminPriority">
-          <option value="low">Low Priority</option>
-          <option value="medium" selected>Medium Priority</option>
-          <option value="high">High Priority</option>
-        </select>
-        <select id="adminAssignUser"><option value="">-- Assign to User --</option></select>
-        <button class="btn btn-primary" onclick="adminCreateTask()">Create Task</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Edit Modal -->
-<div id="editModal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>✏️ Edit Task</h3>
-    <input type="hidden" id="editId" />
-    <input type="text" id="editTitle" placeholder="Title" />
-    <textarea id="editDesc" placeholder="Description"></textarea>
-    <select id="editStatus">
-      <option value="pending">Pending</option>
-      <option value="in-progress">In Progress</option>
-      <option value="completed">Completed</option>
-    </select>
-    <select id="editPriority">
-      <option value="low">Low</option>
-      <option value="medium">Medium</option>
-      <option value="high">High</option>
-    </select>
-    <div style="display:flex;gap:10px;margin-top:6px;">
-      <button class="btn btn-primary" onclick="saveEdit()">Save</button>
-      <button class="btn" style="background:#ccc" onclick="closeModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const API = "http://localhost:5000/api";
-  let token = null;
-  let currentUser = null;
-
-  function showMsg(id, text, type = "error") {
-    const el = document.getElementById(id);
-    el.innerHTML = `<div class="message ${type}">${text}</div>`;
-    setTimeout(() => el.innerHTML = "", 4000);
-  }
-
-  function badge(val, type) {
-    const map = { pending:"badge-pending", "in-progress":"badge-in-progress",
-      completed:"badge-completed", high:"badge-high", medium:"badge-medium", low:"badge-low" };
-    return `<span class="badge ${map[val] || ''}">${val}</span>`;
-  }
-
-  async function doLogin() {
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
+  const doLogin = async () => {
+    if (!email || !password) return setMsg({ type: "error", text: "Email and password are required." });
     try {
       const res = await fetch(`${API}/auth/login`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) return showMsg("loginError", data.message);
-      token = data.token;
-      currentUser = data.user;
-      initApp();
+      if (!res.ok) return setMsg({ type: "error", text: data.message });
+      onLogin(data.token, data.user);
     } catch {
-      showMsg("loginError", "Cannot connect to server. Is the backend running?");
+      setMsg({ type: "error", text: "Cannot connect to server. Is the backend running?" });
     }
-  }
-  function fillCreds(email, pass) {
-  document.getElementById("loginEmail").value = email;
-  document.getElementById("loginPassword").value = pass;
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-white z-50 p-4">
+      <div className="flex w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl">
+
+        {/* Left Panel */}
+        <div className="hidden md:flex flex-col gap-8 flex-1 bg-gradient-to-br from-slate-800 to-emerald-900 p-10 text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl">📋</div>
+            <span className="font-bold text-lg">TaskManager</span>
+          </div>
+          <div>
+            <p className="text-2xl font-bold leading-snug mb-6">
+              Organize work,<br />deliver <span className="text-emerald-400">results.</span>
+            </p>
+            <ul className="space-y-3 text-sm opacity-90">
+              {["Role-based access for Admin & Users", "Create, assign and track tasks",
+                "Secure JWT authentication", "Real-time status updates"].map(f => (
+                <li key={f} className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Right Panel */}
+        <div className="flex-1 bg-white p-10 flex flex-col justify-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h2>
+          <p className="text-sm text-gray-500 mb-6">Sign in to your account to continue</p>
+
+          <Message msg={msg} />
+
+          <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Email address</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+          />
+
+          <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            onKeyDown={e => e.key === "Enter" && doLogin()}
+            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm mb-5 focus:outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+          />
+
+          <button
+            onClick={doLogin}
+            className="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white font-bold py-3 rounded-lg hover:opacity-90 transition text-sm"
+          >
+            Sign in →
+          </button>
+
+          {/* Demo Credentials */}
+          <div className="mt-5 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Demo credentials</p>
+            {[
+              { label: "Admin", badge: "bg-red-100 text-red-700", email: "admin@example.com", pass: "admin123" },
+              { label: "User",  badge: "bg-blue-100 text-blue-700", email: "nasrin@example.com", pass: "user123" },
+            ].map(c => (
+              <div key={c.label} className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{c.label}</span>
+                <span className="text-xs text-gray-500 font-mono flex-1">{c.email} / {c.pass}</span>
+                <button
+                  onClick={() => fillCreds(c.email, c.pass)}
+                  className="text-xs border border-gray-300 rounded px-2 py-0.5 text-gray-500 hover:bg-gray-100"
+                >Fill</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
 }
-  function initApp() {
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("appSection").style.display = "block";
-    document.getElementById("appHeader").style.display = "flex";
-    document.getElementById("headerUser").textContent =
-      `👤 ${currentUser.name} (${currentUser.role})`;
 
-    if (currentUser.role === "admin") {
-  document.getElementById("adminDashboard").style.display = "block";
-  document.getElementById("userDashboard").style.display = "none";
-  loadAdminTasks();
-  loadAdminUsers();
-} else {
-  document.getElementById("userDashboard").style.display = "block";
-  document.getElementById("adminDashboard").style.display = "none";
-  document.getElementById("userInfoBar").textContent =
-    `Welcome, ${currentUser.name}! You can only see and manage your own tasks.`;
-  loadUserTasks();
-}
-  }
+// ── Edit Modal ────────────────────────────────────────────
+function EditModal({ task, token, onClose, onSaved }) {
+  const [title, setTitle]       = useState(task.title);
+  const [desc, setDesc]         = useState(task.description || "");
+  const [status, setStatus]     = useState(task.status);
+  const [priority, setPriority] = useState(task.priority);
 
-  function logout() {
-    token = null; currentUser = null;
-    document.getElementById("loginPage").style.display = "flex"; 
-    document.getElementById("appSection").style.display = "none";
-    document.getElementById("appHeader").style.display = "none";
-    document.getElementById("adminDashboard").style.display = "none";
-    document.getElementById("userDashboard").style.display = "block";
-    document.getElementById("loginEmail").value = "";
-    document.getElementById("loginPassword").value = "";
-  }
-
-  function headers() {
-    return { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
-  }
-
-  // ── USER ──────────────────────────────────
-  async function loadUserTasks() {
-    const res = await fetch(`${API}/tasks`, { headers: headers() });
-    const tasks = await res.json();
-    const body = document.getElementById("userTaskBody");
-    body.innerHTML = tasks.length === 0
-      ? `<tr><td colspan="4" style="text-align:center;color:#999">No tasks yet.</td></tr>`
-      : tasks.map(t => `
-        <tr>
-          <td>${t.title}<br><small style="color:#999">${t.description || ''}</small></td>
-          <td>${badge(t.priority, 'p')}</td>
-          <td>${badge(t.status, 's')}</td>
-          <td class="actions">
-            <button class="btn btn-primary btn-sm" onclick="openEdit('${t.id}','${t.title}','${t.description}','${t.status}','${t.priority}')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}', false)">Delete</button>
-          </td>
-        </tr>`).join("");
-  }
-
-  async function createTask() {
-    const title = document.getElementById("newTitle").value.trim();
-    const description = document.getElementById("newDesc").value.trim();
-    const priority = document.getElementById("newPriority").value;
-    if (!title) return showMsg("createMsg", "Title is required.");
-    const res = await fetch(`${API}/tasks`, {
-      method: "POST", headers: headers(),
-      body: JSON.stringify({ title, description, priority })
-    });
-    const data = await res.json();
-    if (!res.ok) return showMsg("createMsg", data.message);
-    showMsg("createMsg", "Task created!", "success");
-    document.getElementById("newTitle").value = "";
-    document.getElementById("newDesc").value = "";
-    loadUserTasks();
-  }
-
-  // ── ADMIN ─────────────────────────────────
-  async function loadAdminTasks() {
-    const res = await fetch(`${API}/tasks`, { headers: headers() });
-    const tasks = await res.json();
-    const body = document.getElementById("adminTaskBody");
-    body.innerHTML = tasks.map(t => `
-      <tr>
-        <td>${t.title}</td>
-        <td>${t.ownerName || '-'}</td>
-        <td>${badge(t.priority, 'p')}</td>
-        <td>${badge(t.status, 's')}</td>
-        <td class="actions">
-          <button class="btn btn-primary btn-sm" onclick="openEdit('${t.id}','${t.title}','${t.description}','${t.status}','${t.priority}')">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}', true)">Delete</button>
-        </td>
-      </tr>`).join("");
-  }
-
-  async function loadAdminUsers() {
-    const res = await fetch(`${API}/users`, { headers: headers() });
-    const users = await res.json();
-    const body = document.getElementById("adminUserBody");
-    const select = document.getElementById("adminAssignUser");
-    body.innerHTML = users.map(u => `
-      <tr>
-        <td>${u.name}</td>
-        <td>${u.email}</td>
-        <td><span class="badge ${u.role === 'admin' ? 'badge-high' : 'badge-in-progress'}">${u.role}</span></td>
-        <td>${u.role !== 'admin'
-          ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Delete</button>`
-          : '<span style="color:#999;font-size:0.8rem">Protected</span>'
-        }</td>
-      </tr>`).join("");
-    select.innerHTML = `<option value="">-- Assign to User --</option>` +
-      users.filter(u => u.role === "user")
-        .map(u => `<option value="${u.id}">${u.name}</option>`).join("");
-  }
-
-  async function adminCreateTask() {
-    const title = document.getElementById("adminTitle").value.trim();
-    const description = document.getElementById("adminDesc").value.trim();
-    const priority = document.getElementById("adminPriority").value;
-    const userId = document.getElementById("adminAssignUser").value;
-    if (!title) return showMsg("adminCreateMsg", "Title is required.");
-    const res = await fetch(`${API}/tasks`, {
-      method: "POST", headers: headers(),
-      body: JSON.stringify({ title, description, priority, userId })
-    });
-    const data = await res.json();
-    if (!res.ok) return showMsg("adminCreateMsg", data.message);
-    showMsg("adminCreateMsg", "Task created!", "success");
-    document.getElementById("adminTitle").value = "";
-    document.getElementById("adminDesc").value = "";
-    loadAdminTasks();
-  }
-
-  async function deleteTask(id, isAdmin) {
-    if (!confirm("Delete this task?")) return;
-    const res = await fetch(`${API}/tasks/${id}`, { method: "DELETE", headers: headers() });
-    const data = await res.json();
-    if (!res.ok) return alert(data.message);
-    isAdmin ? loadAdminTasks() : loadUserTasks();
-  }
-
-  async function deleteUser(id) {
-    if (!confirm("Delete this user?")) return;
-    const res = await fetch(`${API}/users/${id}`, { method: "DELETE", headers: headers() });
-    const data = await res.json();
-    if (!res.ok) return alert(data.message);
-    loadAdminUsers();
-    loadAdminTasks();
-  }
-
-  // ── EDIT MODAL ────────────────────────────
-  function openEdit(id, title, desc, status, priority) {
-    document.getElementById("editId").value = id;
-    document.getElementById("editTitle").value = title;
-    document.getElementById("editDesc").value = desc === 'undefined' ? '' : desc;
-    document.getElementById("editStatus").value = status;
-    document.getElementById("editPriority").value = priority;
-    document.getElementById("editModal").style.display = "flex";
-  }
-
-  function closeModal() {
-    document.getElementById("editModal").style.display = "none";
-  }
-
-  async function saveEdit() {
-    const id = document.getElementById("editId").value;
-    const title = document.getElementById("editTitle").value.trim();
-    const description = document.getElementById("editDesc").value.trim();
-    const status = document.getElementById("editStatus").value;
-    const priority = document.getElementById("editPriority").value;
-    const res = await fetch(`${API}/tasks/${id}`, {
-      method: "PUT", headers: headers(),
-      body: JSON.stringify({ title, description, status, priority })
+  const save = async () => {
+    const res = await fetch(`${API}/tasks/${task.id}`, {
+      method: "PUT",
+      headers: authHeaders(token),
+      body: JSON.stringify({ title, description: desc, status, priority }),
     });
     if (!res.ok) { const d = await res.json(); return alert(d.message); }
-    closeModal();
-    currentUser.role === "admin" ? loadAdminTasks() : loadUserTasks();
-  }
+    onSaved();
+    onClose();
+  };
 
-  function switchTab(tabId, el) {
-    ["tasksTab","usersTab","createTab"].forEach(id => {
-      document.getElementById(id).style.display = id === tabId ? "block" : "none";
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+        <h3 className="text-base font-bold text-slate-800 mb-4">✏️ Edit Task</h3>
+        <input value={title} onChange={e => setTitle(e.target.value)}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-slate-500"
+          placeholder="Title" />
+        <textarea value={desc} onChange={e => setDesc(e.target.value)}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 h-20 resize-y focus:outline-none focus:border-slate-500"
+          placeholder="Description" />
+        <select value={status} onChange={e => setStatus(e.target.value)}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none">
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+        <select value={priority} onChange={e => setPriority(e.target.value)}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <div className="flex gap-3">
+          <button onClick={save}
+            className="flex-1 bg-slate-800 text-white text-sm font-semibold py-2 rounded-lg hover:bg-slate-700 transition">
+            Save
+          </button>
+          <button onClick={onClose}
+            className="flex-1 bg-gray-100 text-gray-600 text-sm font-semibold py-2 rounded-lg hover:bg-gray-200 transition">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── User Dashboard ────────────────────────────────────────
+function UserDashboard({ token, user }) {
+  const [tasks, setTasks]       = useState([]);
+  const [title, setTitle]       = useState("");
+  const [desc, setDesc]         = useState("");
+  const [priority, setPriority] = useState("medium");
+  const [msg, setMsg]           = useState({});
+  const [editTask, setEditTask] = useState(null);
+
+  const load = async () => {
+    const res = await fetch(`${API}/tasks`, { headers: authHeaders(token) });
+    setTasks(await res.json());
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const showMsg = (text, type = "error") => {
+    setMsg({ text, type });
+    setTimeout(() => setMsg({}), 4000);
+  };
+
+  const createTask = async () => {
+    if (!title.trim()) return showMsg("Title is required.");
+    const res = await fetch(`${API}/tasks`, {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({ title, description: desc, priority }),
     });
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    el.classList.add("active");
-  }
+    const data = await res.json();
+    if (!res.ok) return showMsg(data.message);
+    showMsg("Task created!", "success");
+    setTitle(""); setDesc("");
+    load();
+  };
+
+  const deleteTask = async (id) => {
+    if (!confirm("Delete this task?")) return;
+    const res = await fetch(`${API}/tasks/${id}`, { method: "DELETE", headers: authHeaders(token) });
+    const data = await res.json();
+    if (!res.ok) return alert(data.message);
+    load();
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="bg-blue-50 border-l-4 border-blue-700 px-4 py-3 rounded-lg text-sm text-blue-800">
+        Welcome, <strong>{user.name}</strong>! You can only see and manage your own tasks.
+      </div>
+
+      {/* Create Task */}
+      <div className="bg-white rounded-xl shadow-sm p-5">
+        <h2 className="text-base font-bold text-slate-800 mb-4">➕ Create New Task</h2>
+        <Message msg={msg} />
+        <input value={title} onChange={e => setTitle(e.target.value)}
+          placeholder="Task title *"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-slate-500" />
+        <textarea value={desc} onChange={e => setDesc(e.target.value)}
+          placeholder="Description (optional)"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 h-16 resize-y focus:outline-none focus:border-slate-500" />
+        <select value={priority} onChange={e => setPriority(e.target.value)}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none">
+          <option value="low">Low Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="high">High Priority</option>
+        </select>
+        <button onClick={createTask}
+          className="bg-slate-800 text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-slate-700 transition">
+          Create Task
+        </button>
+      </div>
+
+      {/* Task Table */}
+      <div className="bg-white rounded-xl shadow-sm p-5">
+        <h2 className="text-base font-bold text-slate-800 mb-4">📌 My Tasks</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[420px]">
+            <thead>
+              <tr className="bg-slate-800 text-white text-left">
+                <th className="px-4 py-2.5 rounded-tl-lg">Title</th>
+                <th className="px-4 py-2.5">Priority</th>
+                <th className="px-4 py-2.5">Status</th>
+                <th className="px-4 py-2.5 rounded-tr-lg">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.length === 0
+                ? <tr><td colSpan={4} className="text-center py-6 text-gray-400">No tasks yet.</td></tr>
+                : tasks.map(t => (
+                  <tr key={t.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-gray-800">{t.title}</div>
+                      {t.description && <div className="text-xs text-gray-400 mt-0.5">{t.description}</div>}
+                    </td>
+                    <td className="px-4 py-3"><PriorityBadge value={t.priority} /></td>
+                    <td className="px-4 py-3"><StatusBadge value={t.status} /></td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button onClick={() => setEditTask(t)}
+                          className="bg-slate-700 text-white text-xs px-3 py-1 rounded-md hover:bg-slate-600 transition">Edit</button>
+                        <button onClick={() => deleteTask(t.id)}
+                          className="bg-red-500 text-white text-xs px-3 py-1 rounded-md hover:bg-red-400 transition">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {editTask && <EditModal task={editTask} token={token} onClose={() => setEditTask(null)} onSaved={load} />}
+    </div>
+  );
+}
+
+// ── Admin Dashboard ───────────────────────────────────────
+function AdminDashboard({ token }) {
+  const [tab, setTab]     = useState("tasks");
+  const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [editTask, setEditTask] = useState(null);
+
+  const [title, setTitle]       = useState("");
+  const [desc, setDesc]         = useState("");
+  const [priority, setPriority] = useState("medium");
+  const [assignTo, setAssignTo] = useState("");
+  const [msg, setMsg]           = useState({});
+
+  const loadTasks = async () => {
+    const res = await fetch(`${API}/tasks`, { headers: authHeaders(token) });
+    setTasks(await res.json());
+  };
+
+  const loadUsers = async () => {
+    const res = await fetch(`${API}/users`, { headers: authHeaders(token) });
+    setUsers(await res.json());
+  };
+
+  useEffect(() => { loadTasks(); loadUsers(); }, []);
+
+  const showMsg = (text, type = "error") => {
+    setMsg({ text, type });
+    setTimeout(() => setMsg({}), 4000);
+  };
+
+  const createTask = async () => {
+    if (!title.trim()) return showMsg("Title is required.");
+    const res = await fetch(`${API}/tasks`, {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({ title, description: desc, priority, userId: assignTo || undefined }),
+    });
+    const data = await res.json();
+    if (!res.ok) return showMsg(data.message);
+    showMsg("Task created!", "success");
+    setTitle(""); setDesc(""); setAssignTo("");
+    loadTasks();
+  };
+
+  const deleteTask = async (id) => {
+    if (!confirm("Delete this task?")) return;
+    const res = await fetch(`${API}/tasks/${id}`, { method: "DELETE", headers: authHeaders(token) });
+    const data = await res.json();
+    if (!res.ok) return alert(data.message);
+    loadTasks();
+  };
+
+  const deleteUser = async (id) => {
+    if (!confirm("Delete this user?")) return;
+    const res = await fetch(`${API}/users/${id}`, { method: "DELETE", headers: authHeaders(token) });
+    const data = await res.json();
+    if (!res.ok) return alert(data.message);
+    loadUsers(); loadTasks();
+  };
+
+  const tabs = [
+    { key: "tasks",  label: "All Tasks" },
+    { key: "users",  label: "All Users" },
+    { key: "create", label: "Create Task" },
+  ];
+
+  return (
+    <div className="space-y-5">
+      <div className="bg-blue-50 border-l-4 border-blue-700 px-4 py-3 rounded-lg text-sm text-blue-800">
+        Logged in as <strong>Admin</strong>. You can manage all users and tasks.
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {tabs.map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold border-2 border-slate-800 transition
+              ${tab === t.key ? "bg-slate-800 text-white" : "bg-white text-slate-800 hover:bg-slate-50"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* All Tasks Tab */}
+      {tab === "tasks" && (
+        <div className="bg-white rounded-xl shadow-sm p-5">
+          <h2 className="text-base font-bold text-slate-800 mb-4">📋 All Tasks</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[500px]">
+              <thead>
+                <tr className="bg-slate-800 text-white text-left">
+                  <th className="px-4 py-2.5 rounded-tl-lg">Title</th>
+                  <th className="px-4 py-2.5">Assigned To</th>
+                  <th className="px-4 py-2.5">Priority</th>
+                  <th className="px-4 py-2.5">Status</th>
+                  <th className="px-4 py-2.5 rounded-tr-lg">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map(t => (
+                  <tr key={t.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-800">{t.title}</td>
+                    <td className="px-4 py-3 text-gray-500">{t.ownerName || "-"}</td>
+                    <td className="px-4 py-3"><PriorityBadge value={t.priority} /></td>
+                    <td className="px-4 py-3"><StatusBadge value={t.status} /></td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button onClick={() => setEditTask(t)}
+                          className="bg-slate-700 text-white text-xs px-3 py-1 rounded-md hover:bg-slate-600 transition">Edit</button>
+                        <button onClick={() => deleteTask(t.id)}
+                          className="bg-red-500 text-white text-xs px-3 py-1 rounded-md hover:bg-red-400 transition">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* All Users Tab */}
+      {tab === "users" && (
+        <div className="bg-white rounded-xl shadow-sm p-5">
+          <h2 className="text-base font-bold text-slate-800 mb-4">👥 All Users</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[400px]">
+              <thead>
+                <tr className="bg-slate-800 text-white text-left">
+                  <th className="px-4 py-2.5 rounded-tl-lg">Name</th>
+                  <th className="px-4 py-2.5">Email</th>
+                  <th className="px-4 py-2.5">Role</th>
+                  <th className="px-4 py-2.5 rounded-tr-lg">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map(u => (
+                  <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-800">{u.name}</td>
+                    <td className="px-4 py-3 text-gray-500">{u.email}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold
+                        ${u.role === "admin" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
+                        {u.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {u.role !== "admin"
+                        ? <button onClick={() => deleteUser(u.id)}
+                            className="bg-red-500 text-white text-xs px-3 py-1 rounded-md hover:bg-red-400 transition">Delete</button>
+                        : <span className="text-xs text-gray-400">Protected</span>
+                      }
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Create Task Tab */}
+      {tab === "create" && (
+        <div className="bg-white rounded-xl shadow-sm p-5">
+          <h2 className="text-base font-bold text-slate-800 mb-4">➕ Create Task (Assign to User)</h2>
+          <Message msg={msg} />
+          <input value={title} onChange={e => setTitle(e.target.value)}
+            placeholder="Task title *"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-slate-500" />
+          <textarea value={desc} onChange={e => setDesc(e.target.value)}
+            placeholder="Description (optional)"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 h-16 resize-y focus:outline-none focus:border-slate-500" />
+          <select value={priority} onChange={e => setPriority(e.target.value)}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+          <select value={assignTo} onChange={e => setAssignTo(e.target.value)}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none">
+            <option value="">-- Assign to User --</option>
+            {users.filter(u => u.role === "user").map(u => (
+              <option key={u.id} value={u.id}>{u.name}</option>
+            ))}
+          </select>
+          <button onClick={createTask}
+            className="bg-slate-800 text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-slate-700 transition">
+            Create Task
+          </button>
+        </div>
+      )}
+
+      {editTask && <EditModal task={editTask} token={token} onClose={() => setEditTask(null)} onSaved={loadTasks} />}
+    </div>
+  );
+}
+
+// ── App Root ──────────────────────────────────────────────
+function App() {
+  const [token, setToken]       = useState(null);
+  const [currentUser, setUser]  = useState(null);
+
+  const handleLogin = (t, u) => { setToken(t); setUser(u); };
+
+  const logout = () => { setToken(null); setUser(null); };
+
+  if (!token) return <LoginPage onLogin={handleLogin} />;
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-slate-800 text-white px-5 py-3 flex justify-between items-center flex-wrap gap-2">
+        <h1 className="font-bold text-base">📋 Task Manager</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-sm opacity-80">👤 {currentUser.name} ({currentUser.role})</span>
+          <button onClick={logout}
+            className="bg-red-500 hover:bg-red-400 text-white text-xs font-semibold px-4 py-1.5 rounded-md transition">
+            Logout
+          </button>
+        </div>
+      </header>
+
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-4 py-5">
+        {currentUser.role === "admin"
+          ? <AdminDashboard token={token} />
+          : <UserDashboard token={token} user={currentUser} />
+        }
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
